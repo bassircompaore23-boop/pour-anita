@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pour Anita</title>
+<style>
+  /* ============================================================
+     🔧 ZONE À MODIFIER : tout se règle dans le bloc CONFIG,
+     tout en bas dans la balise <script>
+     ============================================================ */
+
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=EB+Garamond:ital@0;1&display=swap');
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #f4efe9;
+    font-family: 'EB Garamond', serif;
+    color: #3a2f2a;
+    overflow: hidden;
+  }
+
+  #stage {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.96);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .screen.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+  }
+
+  .card {
+    background: #fffdfb;
+    border: 1px solid #e4d8ca;
+    border-radius: 4px;
+    padding: 40px 32px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(90, 60, 40, 0.12);
+  }
+
+  .kicker {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #9b3b3b;
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 1.25;
+    margin: 0 0 18px 0;
+    color: #3a2320;
+  }
+
+  .letter-body {
+    text-align: center;
+    line-height: 1.8;
+    font-size: 16px;
+    color: #4a3d35;
+    white-space: pre-line;
+  }
+
+  .signature {
+    margin-top: 22px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #7d1f28;
+    text-align: right;
+  }
+
+  /* Envelope screen */
+  .envelope-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .envelope {
+    width: 220px;
+    height: 150px;
+    position: relative;
+    background: #fffdfb;
+    border: 1px solid #e4d8ca;
+    border-radius: 4px;
+    box-shadow: 0 20px 50px rgba(90,60,40,0.15);
+  }
+
+  .envelope::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 0;
+    border-left: 110px solid transparent;
+    border-right: 110px solid transparent;
+    border-top: 90px solid #efe5d8;
+  }
+
+  .seal {
+    position: absolute;
+    top: 62px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    background: #7d1f28;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fdf6f0;
+    font-size: 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    animation: pulse 2s infinite ease-in-out;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.08); }
+  }
+
+  .touch-label {
+    margin-top: 18px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #a3948a;
+  }
+
+  .heart {
+    font-size: 22px;
+    color: #7d1f28;
+    margin-top: 18px;
+  }
+
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <!-- Écran 1 : enveloppe -->
+  <div class="screen active" id="screen-envelope">
+    <div class="envelope-wrap" onclick="goTo('screen-message')">
+      <div class="envelope">
+        <div class="seal">♡</div>
+      </div>
+      <div class="touch-label">Touche la lettre</div>
+    </div>
+  </div>
+
+  <!-- Écran 2 : le message -->
+  <div class="screen" id="screen-message">
+    <div class="card">
+      <div class="kicker" id="kicker-name">Pour toi, Anita</div>
+      <h1 id="letter-title">Un petit mot pour toi</h1>
+      <div class="letter-body" id="letter-body"></div>
+      <div class="signature" id="signature"></div>
+      <div class="heart">♡</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   🔧 MODIFIE UNIQUEMENT CETTE PARTIE
+   ============================================================ */
+const CONFIG = {
+  name: "Anita",                          // prénom affiché
+  letterTitle: "Un petit mot pour toi",   // titre du message
+  letterText: `Bonsoir Ma Princesse,
+
+Parfois je te regarde et je me demande comment j'ai eu la chance de trouver une fille aussi merveilleuse que toi.
+
+Je t'aime plus que tout au monde, ma Princesse.`,
+  signature: "— Mohamad"                  // signature en bas du message
+};
+/* ============================================================ */
+
+document.getElementById("kicker-name").innerText = "Pour toi, " + CONFIG.name;
+document.getElementById("letter-title").innerText = CONFIG.letterTitle;
+document.getElementById("letter-body").innerText = CONFIG.letterText;
+document.getElementById("signature").innerText = CONFIG.signature;
+
+function goTo(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+</script>
+
+</body>
+</html>
